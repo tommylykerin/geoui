@@ -1,10 +1,14 @@
 import React, { Suspense } from 'react';
-import { Provider } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { BrowserRouter, Route, Redirect, Switch, Link } from 'react-router-dom';
 import NoMatch from './components/NoMatch';
 import Home from './pages/Home';
 
 const Protected: React.FC = () => {
+    const auth = useSelector((state: any) => state.auth);
+    if (auth.loggedIn === false) {
+        return <Redirect to="/login" />
+    }
     return (
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <Switch>
