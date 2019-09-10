@@ -19,7 +19,7 @@ const Auth: React.FC = () => {
             <Row className="justify-content-end">
                 <Col xs={12} lg={4}>
                     <div className="mt-5 mr-5 shadow-sm">
-                        <Nav justify variant="tabs" defaultActiveKey="/home">
+                        <Nav justify variant="tabs">
                             <Nav.Item>
                                 <NavLink className="nav-link" activeClassName="active" to="/login">Login</NavLink>
                             </Nav.Item>

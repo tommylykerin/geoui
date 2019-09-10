@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { createProjectAction } from './actions';
@@ -15,7 +16,12 @@ import { getBase64Image } from '../../includes/utils';
 const Home: React.FC = () => {
     const home = useSelector((state: any) => state.home);
     const [showModal, setShowModal] = useState(false);
-    const handleClose = () => setShowModal(false);
+    const handleClose = () => {
+        setShowModal(false);
+        setProjectTitle('');
+        setProjectDescription('');
+        setProjectImage('');
+    }
     const handleShow = () => setShowModal(true);
 
     const dispatch = useDispatch();
@@ -30,12 +36,36 @@ const Home: React.FC = () => {
         createProject(projectTitle, projectDescription, projectImage);
     }
 
+    useEffect(
+        () => console.log("ImageDataURL: " + projectImage),
+        [projectImage]
+    );
+
+    const setImages = (e: any) => {
+        e.preventDefault();
+        setProjectImage(''); // empty out current image
+        const imageFiles = e.target.files; // document.getElementById("image"); // You may want to avoid querying the dom yourself, try and rely on react as much as possible
+        const filesLength = imageFiles.length; // imageFiles.files.length;
+        // const temp = null;
+
+        for (var i = 0; i < filesLength; i++) {
+            let reader: any = new FileReader();
+            let file = imageFiles[i];
+
+            reader.onloadend = () => {
+                setProjectImage(reader.result);
+            }
+
+            reader.readAsDataURL(file);
+        }
+    }
+
     return (
         <>
             <Container>
                 <Row>
                     <Col>
-                        <Form.Control type="text" placeholder="My projects" />
+                        <Form.Control size="lg" type="text" placeholder="My projects" />
                     </Col>
                 </Row>
                 <div className="clearfix"></div>
@@ -68,11 +98,19 @@ const Home: React.FC = () => {
                             />
                         </Form.Group>
 
-                        {/* <Form.Group controlId="projectImage">
+                        <Form.Group controlId="projectImage">
                             <Form.Label>Associated Image</Form.Label>
-                            <Form.Control type="file" accept="image/*" onChange={(e: any) => setProjectImage(getBase64Image(e.target))}/>
-                            <canvas id="imgCanvas" />
-                        </Form.Group> */}
+                            <Form.Control type="file" accept="image/*" onChange={(e: any) => setImages(e)} />
+                            <Col className="p-3">
+                                {
+                                    projectImage != '' &&
+                                    <Button variant="danger" onClick={() => {setProjectImage('')}} >
+                                        X
+                                    </Button>
+                                }
+                                <Image src={`${projectImage}`} rounded style={{maxWidth: '100%'}} />
+                            </Col>
+                        </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
